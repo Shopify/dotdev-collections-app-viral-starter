@@ -1,0 +1,6 @@
+roles = ["frontend", "backend"]
+webhooks_path = "/webhooks"
+
+[commands]
+predev = "pnpm exec prisma generate && pnpm exec prisma migrate deploy"
+dev = "pnpm exec remix vite:dev"

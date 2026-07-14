@@ -1,0 +1,54 @@
+// Prisma schema. SQLite for local dev; swap the datasource for prod hosting.
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Required by @shopify/shopify-app-session-storage-prisma.
+model Session {
+  id            String    @id
+  shop          String
+  state         String
+  isOnline      Boolean   @default(false)
+  scope         String?
+  expires       DateTime?
+  accessToken   String
+  userId        BigInt?
+  firstName     String?
+  lastName      String?
+  email         String?
+  accountOwner  Boolean   @default(false)
+  locale        String?
+  collaborator  Boolean?  @default(false)
+  emailVerified Boolean?  @default(false)
+}
+
+// Per-shop feature toggles. Each workshop step is a flag the merchant flips on.
+model ShopFeature {
+  id        String   @id @default(cuid())
+  shop      String
+  key       String   // matches FeatureKey in app/features/registry.ts
+  enabled   Boolean  @default(false)
+  config    String?  // JSON blob for per-feature settings (thresholds, ids)
+  updatedAt DateTime @updatedAt
+
+  @@unique([shop, key])
+}
+
+// Records the app-owned collection sources / collections we provision, so we can
+// update or tear them down idempotently instead of creating duplicates.
+model ManagedResource {
+  id           String   @id @default(cuid())
+  shop         String
+  kind         String   // "metafieldDefinition" | "collection" | "source"
+  featureKey   String
+  handle       String   // logical name, e.g. "trending-on-social"
+  gid          String   // Shopify global id
+  createdAt    DateTime @default(now())
+
+  @@unique([shop, kind, handle])
+}

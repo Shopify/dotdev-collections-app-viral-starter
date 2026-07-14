@@ -1,0 +1,56 @@
+{
+  "name": "dotdev-collections-app-viral-starter",
+  "private": true,
+  "description": "Viral prompt-only starter — DotDev 2026. Coding/Sidekick prompts + Mark as done.",
+  "scripts": {
+    "build": "remix vite:build",
+    "dev": "shopify app dev",
+    "config:link": "shopify app config link",
+    "deploy": "shopify app deploy",
+    "prisma": "prisma",
+    "setup": "prisma generate && prisma migrate deploy",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit",
+    "smoke": "node scripts/smoke.mjs"
+  },
+  "type": "module",
+  "engines": {
+    "node": "^18.20 || ^20.10 || >=21.0.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.19.0",
+    "@remix-run/node": "^2.11.0",
+    "@remix-run/react": "^2.11.0",
+    "@remix-run/serve": "^2.11.0",
+    "@shopify/app-bridge-react": "^4.1.0",
+    "@shopify/polaris": "^12.27.0",
+    "@shopify/polaris-icons": "^9.3.1",
+    "@shopify/shopify-app-remix": "^3.4.0",
+    "@shopify/shopify-app-session-storage-prisma": "^5.1.0",
+    "isbot": "^5.1.0",
+    "prisma": "^5.19.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@remix-run/dev": "^2.11.0",
+    "@shopify/admin-api-client": "^1.1.2",
+    "@types/node": "^20.6.3",
+    "@types/react": "^18.2.31",
+    "@types/react-dom": "^18.2.14",
+    "prettier": "^3.3.0",
+    "typescript": "^5.2.2",
+    "vite": "^6.4.3",
+    "vite-tsconfig-paths": "^4.3.2"
+  },
+  "author": "Shopify",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "esbuild",
+      "prisma"
+    ]
+  }
+}

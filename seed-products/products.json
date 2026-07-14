@@ -1,0 +1,207 @@
+{
+  "$description": "Portable seed-product catalog for the leather-goods demo brand. App-agnostic: no vendor/shop name, status, or GraphQL logic baked in — each app applies its own defaults on top of this data. Pair with the images in ./product-images.",
+  "colors": ["Brown", "Red", "Black"],
+  "imageNaming": "Images live at ./product-images/{imageBase}-{brown|red|black|lifestyle}.png.",
+  "products": [
+    {
+      "title": "Square Valet Tray",
+      "productType": "Valet Trays",
+      "tags": ["accessories", "trays"],
+      "material": "Full-grain leather",
+      "price": "68.00",
+      "sku": "SVT",
+      "imageBase": "square-valet-tray",
+      "descriptionHtml": "<p>A compact valet tray with clean squared corners, built to keep the daily reset simple — keys, watch, wallet, and coins, all in one place by the door or on a light console.</p><p><strong>Key details:</strong> full-grain leather; brass snap corners; removable center divider; slim silhouette that sits flat on any surface.</p><p>Available in brown, red, or black leather.</p>"
+    },
+    {
+      "title": "Round Catchall Tray",
+      "productType": "Catchall Trays",
+      "tags": ["accessories", "trays"],
+      "material": "Full-grain leather",
+      "price": "62.00",
+      "sku": "RCT",
+      "imageBase": "round-catchall-tray",
+      "descriptionHtml": "<p>A rounded catchall for the nightstand or entryway, sized for the small things that otherwise end up scattered — an integrated coin pocket and a side loop keep loose change and a pen contained.</p><p><strong>Key details:</strong> full-grain leather; integrated coin pocket; slim pen loop; soft, rolled edge.</p><p>Available in brown, red, or black leather.</p>"
+    },
+    {
+      "title": "14-inch Laptop Sleeve",
+      "productType": "Laptop Sleeves",
+      "tags": ["accessories", "tech"],
+      "material": "Full-grain leather",
+      "price": "148.00",
+      "sku": "LPS",
+      "imageBase": "14-inch-laptop-sleeve",
+      "descriptionHtml": "<p>A slim sleeve built for a 14-inch laptop, with a hidden magnetic flap that opens to a soft micro-suede lining and a flush front pocket for a notebook or a few papers.</p><p><strong>Key details:</strong> full-grain leather; hidden magnetic closure; micro-suede interior; flush front pocket; elastic cable-keeper strap.</p><p>Available in brown, red, or black leather.</p>"
+    },
+    {
+      "title": "Tech Zipper Pouch",
+      "productType": "Tech Pouches",
+      "tags": ["accessories", "tech"],
+      "material": "Full-grain leather",
+      "price": "58.00",
+      "sku": "TZP",
+      "imageBase": "tech-zipper-pouch",
+      "descriptionHtml": "<p>A gusseted zipper pouch that stands upright on its own base, sized for chargers, cables, and small electronics you don't want loose in a bag.</p><p><strong>Key details:</strong> full-grain leather; wrap-around zipper; interior elastic bands to hold coiled cables in place; gusseted, self-standing base.</p><p>Available in brown, red, or black leather.</p>"
+    },
+    {
+      "title": "Slim Card Wallet",
+      "productType": "Card Wallets",
+      "tags": ["accessories", "wallets"],
+      "material": "Full-grain leather",
+      "price": "78.00",
+      "sku": "SCW",
+      "imageBase": "card-wallet",
+      "descriptionHtml": "<p>A minimal card wallet built around fast access — a diagonal quick-access slot keeps a most-used card a thumb's reach away, with a discreet pull-tab for the rest.</p><p><strong>Key details:</strong> full-grain leather; diagonal quick-access slot; discreet pull-tab; clean, unlined edges for a slim profile.</p><p>Available in brown, red, or black leather.</p>"
+    },
+    {
+      "title": "Tri-fold Cable Organizer",
+      "productType": "Cable Organizers",
+      "tags": ["accessories", "tech"],
+      "material": "Full-grain leather",
+      "price": "48.00",
+      "sku": "TCO",
+      "imageBase": "tri-fold-cable-organizer",
+      "descriptionHtml": "<p>A fold-out organizer for the cables and small accessories that usually end up tangled in a bag — three snapped loops hold coiled cables in place, with a slim zip pocket for adapters.</p><p><strong>Key details:</strong> full-grain leather; three snapped leather loops; slim zip pocket; wrap strap with a brass stud closure.</p><p>Available in brown, red, or black leather.</p>"
+    },
+    {
+      "title": "Key Organizer",
+      "productType": "Key Organizers",
+      "tags": ["accessories", "edc"],
+      "material": "Full-grain leather",
+      "price": "38.00",
+      "sku": "KYO",
+      "imageBase": "key-organizer",
+      "descriptionHtml": "<p>A stacked key organizer that trades a jangling ring for a quiet metal post, with a low-profile D-ring and a detachable loop for a spare fob or small charm.</p><p><strong>Key details:</strong> full-grain leather; stacked keys on a metal post; low-profile D-ring; detachable leather loop.</p><p>Available in brown, red, or black leather.</p>"
+    },
+    {
+      "title": "Glasses Sleeve",
+      "productType": "Glasses Cases",
+      "tags": ["accessories", "edc"],
+      "material": "Full-grain leather",
+      "price": "58.00",
+      "sku": "GLS",
+      "imageBase": "glasses-sleeve",
+      "descriptionHtml": "<p>A soft-sided sleeve for glasses or sunglasses, with a magnetic top entry and a micro-suede lining that keeps lenses protected without a rigid case.</p><p><strong>Key details:</strong> full-grain leather; magnetic top-entry closure; micro-suede interior lining; slim profile for a bag or drawer.</p><p>Available in brown, red, or black leather.</p>"
+    },
+    {
+      "title": "Desk Mouse Pad",
+      "productType": "Desk Mats",
+      "tags": ["accessories", "desk"],
+      "material": "Full-grain leather",
+      "price": "68.00",
+      "sku": "DMP",
+      "imageBase": "desk-mouse-pad",
+      "descriptionHtml": "<p>A rectangular leather mouse pad with a shallow trough along the top edge for a pencil or stylus, and a discreet cable pass-through to keep a charging cable in line.</p><p><strong>Key details:</strong> full-grain leather top; suede underside for grip; shallow pen trough; slim cable pass-through.</p><p>Available in brown, red, or black leather.</p>"
+    },
+    {
+      "title": "Passport Travel Wallet",
+      "productType": "Travel Wallets",
+      "tags": ["accessories", "travel"],
+      "material": "Full-grain leather",
+      "price": "88.00",
+      "sku": "PTW",
+      "imageBase": "travel-wallet",
+      "descriptionHtml": "<p>A bifold travel wallet built around one passport and everything that goes with it — a boarding pass sleeve, two card slots, a tiny SIM/memory-card pocket, and a spine loop for a pen.</p><p><strong>Key details:</strong> full-grain leather; boarding pass sleeve; two card slots; SIM/memory-card pocket; pen loop at the spine.</p><p>Available in brown, red, or black leather.</p>"
+    },
+    {
+      "title": "Forma Tote",
+      "productType": "Totes",
+      "tags": ["bags", "totes"],
+      "material": "Smooth premium leather",
+      "price": "328.00",
+      "sku": "FMT",
+      "imageBase": "forma-tote",
+      "descriptionHtml": "<p>A structured trapezoid tote with clean planes and integrated oval cutout handles. Its quiet geometry and unbranded face give it a calm, Japandi-friendly presence at work or off-duty.</p><p><strong>Key details:</strong> smooth premium leather; hidden magnetic top closure; tonal stitching; dark edge paint; lightly structured base with subtle feet.</p><p><strong>Carry/fit:</strong> hand or crook-of-arm carry; comfortably holds daily essentials, a slim 13\" laptop or tablet, notebook, and a small pouch.</p><p>Pairs with minimal, neutral wardrobes. Available in brown, red, or black leather.</p>"
+    },
+    {
+      "title": "Linea Envelope Crossbody",
+      "productType": "Crossbody",
+      "tags": ["bags", "crossbody"],
+      "material": "Pebbled leather",
+      "price": "198.00",
+      "sku": "LEC",
+      "imageBase": "envelope-crossbody",
+      "descriptionHtml": "<p>A slim, precision-lined envelope bag that reads refined and effortless. The single pin closure and ultra-thin strap keep the silhouette sleek.</p><p><strong>Key details:</strong> pebbled leather for soft texture; minimalist brushed-metal pin/post closure; adjustable slim shoulder strap; tonal stitching and edge paint.</p><p><strong>Carry/fit:</strong> essentials-first layout — phone, flat card case, keys, lipstick; ideal for dinners, galleries, and light days.</p><p>Clean lines suit Japandi minimalism. Available in brown, red, or black leather.</p>"
+    },
+    {
+      "title": "Axis Bucket",
+      "productType": "Bucket Bags",
+      "tags": ["bags", "bucket-bags"],
+      "material": "Matte leather",
+      "price": "248.00",
+      "sku": "AXB",
+      "imageBase": "axis-bucket",
+      "descriptionHtml": "<p>A cylindrical bucket with a seamless body and a gentle matte finish that feels architectural yet warm. Understated and balanced from every angle.</p><p><strong>Key details:</strong> matte leather; recessed top with hidden internal drawstring; single arched handle; tonal stitching; clean, hardware-light look.</p><p><strong>Carry/fit:</strong> compact but roomy — fits a small tablet or notebook, water bottle, wallet, and eyewear case.</p><p>Sculptural shape complements natural woods and limewashed walls. Available in brown, red, or black leather.</p>"
+    },
+    {
+      "title": "Drift Rolltop",
+      "productType": "Backpacks",
+      "tags": ["bags", "backpacks"],
+      "material": "Smooth leather",
+      "price": "298.00",
+      "sku": "DRT",
+      "imageBase": "drift-rolltop",
+      "descriptionHtml": "<p>A minimalist rolltop backpack that blends function with clarity. The silhouette stays slim, with a quiet central strap keeping the roll neatly secured.</p><p><strong>Key details:</strong> smooth leather; low-profile magnetic clasp on the roll; concealed side zip for quick access; slim padded back panel and straps; tonal stitching.</p><p><strong>Carry/fit:</strong> everyday commuter capacity — fits a 13–14\" laptop, charger, notebook, and a light layer.</p><p>Streamlined enough for tailored looks. Available in brown, red, or black leather.</p>"
+    },
+    {
+      "title": "Contour Brief",
+      "productType": "Briefcases",
+      "tags": ["bags", "briefcases"],
+      "material": "Saddle-smooth leather",
+      "price": "268.00",
+      "sku": "CTB",
+      "imageBase": "contour-brief",
+      "descriptionHtml": "<p>A rounded-corner brief with softened edges and an ultra-clean face. Purpose-built for modern work setups without feeling technical.</p><p><strong>Key details:</strong> saddle-smooth leather; flush top zipper with leather pull; slim top handles; removable thin shoulder strap with discreet anchors; micro-piped edges.</p><p><strong>Carry/fit:</strong> slim 13\" laptop, documents, tablet, and small organizer; holds shape without bulk.</p><p>A refined counterpoint to light oak desks and paper lanterns. Available in brown, red, or black leather.</p>"
+    },
+    {
+      "title": "Verge Sling",
+      "productType": "Slings",
+      "tags": ["bags", "slings"],
+      "material": "Smooth leather",
+      "price": "168.00",
+      "sku": "VGS",
+      "imageBase": "verge-sling",
+      "descriptionHtml": "<p>An asymmetrical teardrop sling designed for dynamic, hands-free carry. The diagonal zip keeps access intuitive and the profile minimal.</p><p><strong>Key details:</strong> smooth leather; concealed diagonal zipper; wide adjustable strap anchored off-center; ultra-minimal hardware; tonal stitching.</p><p><strong>Carry/fit:</strong> compact setup — phone, wallet, sunglasses, in-ears, passport, and an e-reader.</p><p>Looks intentional worn front or back. Available in brown, red, or black leather.</p>"
+    },
+    {
+      "title": "Fold Clutch",
+      "productType": "Clutches",
+      "tags": ["bags", "clutches"],
+      "material": "Smooth leather",
+      "price": "148.00",
+      "sku": "FLC",
+      "imageBase": "fold-clutch",
+      "descriptionHtml": "<p>A crisp fold-over clutch that moves effortlessly from day to night. The fold line creates a subtle highlight that feels refined and timeless.</p><p><strong>Key details:</strong> smooth leather; internal magnetic fold closure; tonal stitching; dark edge paint; rear slip pocket sized for a phone.</p><p><strong>Carry/fit:</strong> phone, card case, keys, slim power bank, and a small cosmetic item.</p><p>Easy to perch on linen, wood, or tatami. Available in brown, red, or black leather.</p>"
+    },
+    {
+      "title": "Orbit Duffel",
+      "productType": "Duffels",
+      "tags": ["bags", "duffels"],
+      "material": "Lightly structured leather",
+      "price": "348.00",
+      "sku": "ORD",
+      "imageBase": "orbit-duffel",
+      "descriptionHtml": "<p>A tubular duffel with uninterrupted lines and discreet end-cap pockets. Designed for short getaways and stylish gym transitions.</p><p><strong>Key details:</strong> lightly structured leather body; flush end-cap pockets; double low-profile handles; detachable slim shoulder strap; subtle base feet; tonal stitching.</p><p><strong>Carry/fit:</strong> 24–48 hour capacity — change of clothes, sneakers, dopp kit, tablet, chargers.</p><p>Calm presence on jute runners and pale wood floors. Available in brown, red, or black leather.</p>"
+    },
+    {
+      "title": "Arc Belt Bag",
+      "productType": "Belt Bags",
+      "tags": ["bags", "belt-bags"],
+      "material": "Medium-grain leather",
+      "price": "128.00",
+      "sku": "ABB",
+      "imageBase": "arc-belt-bag",
+      "descriptionHtml": "<p>A curved belt bag that hugs the body, disappearing into clean outfits. The hidden zipper under a slim lip keeps the face uninterrupted.</p><p><strong>Key details:</strong> medium-grain leather; hidden top zip; adjustable leather belt with a low-profile quick-release buckle; tonal stitching and edge paint.</p><p><strong>Carry/fit:</strong> phone, card case, keys, compact sanitizer, and earbuds.</p><p>Wear at the waist or crossbody, pairing with natural fibers and soft, neutral palettes. Available in brown, red, or black leather.</p>"
+    },
+    {
+      "title": "Luna Hobo",
+      "productType": "Hobo Bags",
+      "tags": ["bags", "hobo-bags"],
+      "material": "Supple leather",
+      "price": "268.00",
+      "sku": "LNH",
+      "imageBase": "luna-hobo",
+      "descriptionHtml": "<p>A soft crescent hobo with a gentle drape and a single knotted strap. The arc reads relaxed yet deliberate — an everyday staple with presence.</p><p><strong>Key details:</strong> supple leather; magnetic top closure tucked under the arc; sueded underside peeking at the knot; tonal stitching; minimal hardware.</p><p><strong>Carry/fit:</strong> generous daily carry — wallet, makeup pouch, book, tablet, scarf, and a small water bottle.</p><p>Effortlessly at home near shoji screens, paper lamps, and light-oak tables. Available in brown, red, or black leather.</p>"
+    }
+  ]
+}

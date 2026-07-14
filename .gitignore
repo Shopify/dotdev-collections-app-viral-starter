@@ -1,0 +1,13 @@
+node_modules
+/build
+/.cache
+/public/build
+.env
+.env.*
+!.env.example
+.shopify
+shopify.app.*.toml
+!shopify.app.toml
+prisma/dev.sqlite
+*.log
+.DS_Store
