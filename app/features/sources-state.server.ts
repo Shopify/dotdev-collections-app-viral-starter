@@ -1,5 +1,5 @@
 /**
- * Step 4 — Publish sources for co-creation.
+ * Step 5 — Publish sources for co-creation.
  * Implement from the coding prompt on the build path, then Mark as done.
  */
 
@@ -14,6 +14,6 @@ export async function applySourceToggle(_opts: {
   enabled: boolean;
 }): Promise<void> {
   throw new Error(
-    "publish_sources is not implemented yet — use the Step 4 coding prompt, then Mark as done.",
+    "publish_sources is not implemented yet — use the Step 5 coding prompt, then Mark as done.",
   );
 }

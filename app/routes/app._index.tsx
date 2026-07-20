@@ -8,7 +8,6 @@ import {
   Text,
   BlockStack,
   InlineStack,
-  Badge,
   Banner,
   Button,
   List,
@@ -20,7 +19,6 @@ import {
   BookIcon,
   ClipboardChecklistIcon,
   LightbulbIcon,
-  PackageIcon,
 } from "@shopify/polaris-icons";
 import { useEffect, useRef, useState } from "react";
 import { ActivitySection } from "~/components/ActivitySection";
@@ -39,10 +37,8 @@ import {
   SUCCESS_CRITERIA,
   BLUEPRINT_INTRO,
   BLUEPRINT_TEASER,
-  PARTS_INTRO,
-  PARTS_TEASER,
-  CATALOG_PART_TITLE,
-  CATALOG_PART_DESCRIPTION,
+  RANDOMIZE_STEP_TITLE,
+  RANDOMIZE_STEP_DESCRIPTION,
   API_DOCS_TITLE,
   API_DOCS_DESCRIPTION,
   API_DOCS_LINKS,
@@ -59,16 +55,16 @@ import { provisionStep } from "~/features/provision.server";
 import { retryStep, resetWorkshopExperience } from "~/features/reset-workshop.server";
 import { getRoutes, setStepCompletion, type StepRoute } from "~/features/route.server";
 import { FEATURES, FEATURE_BY_KEY, type FeatureDef, type FeatureKey } from "~/features/registry";
-import { getProductCount, seedProducts, SEED_PRODUCTS } from "~/features/seed-products.server";
+import { getProductCount } from "~/features/seed-products.server";
+import { randomizeTrendingScores } from "~/features/randomize-trending.server";
 import { toActionError } from "~/lib/shopify-errors.server";
 import { authenticate } from "~/shopify.server";
 
-type SectionKey = "mission" | "blueprint" | "parts" | "goFurther";
+type SectionKey = "mission" | "blueprint" | "goFurther";
 
 const DEFAULT_SECTION_OPEN: Record<SectionKey, boolean> = {
   mission: true,
   blueprint: false,
-  parts: true,
   goFurther: false,
 };
 
@@ -83,7 +79,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     flags,
     routes,
     productCount,
-    seedCount: SEED_PRODUCTS.length,
   });
 };
 
@@ -92,25 +87,22 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const form = await request.formData();
   const intent = form.get("intent") as string;
 
-  if (intent === "seed") {
+  if (intent === "randomize-trending") {
     try {
-      const results = await seedProducts({ shop: session.shop, graphql: admin.graphql });
-      const failed = results.filter((r) => r.errors.length > 0);
-      if (failed.length) {
-        const userErrors = failed.flatMap((r) => r.errors.map((e) => `${r.title}: ${e.message}`));
-        return json({
-          kind: "seed" as const,
-          ok: false as const,
-          error: `Shopify userErrors while seeding ${failed.length} product(s)`,
-          userErrors,
-          created: results.length - failed.length,
-        });
-      }
-      return json({ kind: "seed" as const, ok: true as const, created: results.length });
+      const { productCount, variantCount } = await randomizeTrendingScores({
+        shop: session.shop,
+        graphql: admin.graphql,
+      });
+      return json({
+        kind: "randomize-trending" as const,
+        ok: true as const,
+        productCount,
+        variantCount,
+      });
     } catch (e) {
       const err = toActionError(e);
       return json({
-        kind: "seed" as const,
+        kind: "randomize-trending" as const,
         ok: false as const,
         error: err.message,
         userErrors: err.userErrors,
@@ -150,7 +142,16 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 
   try {
-    if (stepIntent === "complete-prompt") {
+    if (stepIntent === "seed") {
+      // Step 1: run the catalog seeder, then mark progress.
+      await provisionStep({
+        shop: session.shop,
+        graphql: admin.graphql,
+        key,
+        enabled: true,
+      });
+      await setStepCompletion(session.shop, key, { enabled: true, route: "auto" });
+    } else if (stepIntent === "complete-prompt") {
       // App steps: run the attendee's implementation, then mark progress.
       // Merchant steps: progress only (Sidekick work happens in admin).
       await provisionStep({
@@ -174,8 +175,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         userErrors: undefined as string[] | undefined,
       });
     }
-    const enabled = stepIntent === "complete-prompt" || stepIntent === "skip";
-    const route: StepRoute | null = enabled ? "prompt" : null;
+    const enabled =
+      stepIntent === "seed" || stepIntent === "complete-prompt" || stepIntent === "skip";
+    const route: StepRoute | null =
+      stepIntent === "seed" ? "auto" : enabled ? "prompt" : null;
     return json({
       kind: "step" as const,
       ok: true as const,
@@ -226,14 +229,15 @@ function ErrorDetails({ message, userErrors }: { message: string; userErrors?: s
 }
 
 export default function Workshop() {
-  const { flags, routes, productCount, seedCount } = useLoaderData<typeof loader>();
+  const { flags, routes, productCount } = useLoaderData<typeof loader>();
   const fetcher = useFetcher<typeof action>();
-  const seeder = useFetcher<typeof action>();
+  const randomizer = useFetcher<typeof action>();
   const workshopReset = useFetcher<typeof action>();
   const revalidator = useRevalidator();
   const shopify = useAppBridge();
   const buildPathRef = useRef<HTMLDivElement>(null);
   const handledStepResultRef = useRef<typeof fetcher.data>(undefined);
+  const handledRandomizeResultRef = useRef<typeof randomizer.data>(undefined);
   const handledWorkshopResetRef = useRef<typeof workshopReset.data>(undefined);
   const [optimistic, setOptimistic] = useState<Partial<Record<FeatureKey, OptimisticPatch>>>({});
   const [openPromptKey, setOpenPromptKey] = useState<FeatureKey | null>(null);
@@ -254,12 +258,14 @@ export default function Workshop() {
   const pending = fetcher.state !== "idle";
   const pendingKey = (fetcher.formData?.get("key") as FeatureKey | null) ?? null;
   const pendingIntent = (fetcher.formData?.get("intent") as StepIntent | null) ?? null;
-  const seeding = seeder.state !== "idle";
+  const randomizing = randomizer.state !== "idle";
 
   const stepResult =
     fetcher.data && "kind" in fetcher.data && fetcher.data.kind === "step" ? fetcher.data : null;
-  const seedResult =
-    seeder.data && "kind" in seeder.data && seeder.data.kind === "seed" ? seeder.data : null;
+  const randomizeResult =
+    randomizer.data && "kind" in randomizer.data && randomizer.data.kind === "randomize-trending"
+      ? randomizer.data
+      : null;
   const workshopResetResult =
     workshopReset.data &&
     "kind" in workshopReset.data &&
@@ -284,21 +290,17 @@ export default function Workshop() {
         ? workshopResetResult.userErrors
         : undefined,
     };
-  } else if (seedResult && !seedResult.ok) {
+  } else if (randomizeResult && !randomizeResult.ok) {
     actionError = {
-      message: seedResult.error ?? "Seed failed",
-      userErrors: Array.isArray(seedResult.userErrors) ? seedResult.userErrors : undefined,
+      message: randomizeResult.error ?? "Randomize failed",
+      userErrors: Array.isArray(randomizeResult.userErrors)
+        ? randomizeResult.userErrors
+        : undefined,
     };
   }
 
   const catalogReady = productCount > 0;
   const currentStepKey = getCurrentStepKey(value);
-
-  useEffect(() => {
-    if (catalogReady) {
-      setSectionsOpen((current) => ({ ...current, parts: false }));
-    }
-  }, [catalogReady]);
 
   useEffect(() => {
     if (fetcher.state !== "idle" || !stepResult) return;
@@ -337,6 +339,20 @@ export default function Workshop() {
       shopify.toast.show(detail, { isError: true });
     }
   }, [fetcher.state, fetcher.data, stepResult, shopify, revalidator]);
+
+  useEffect(() => {
+    if (randomizer.state !== "idle" || !randomizeResult) return;
+    if (handledRandomizeResultRef.current === randomizer.data) return;
+    handledRandomizeResultRef.current = randomizer.data;
+
+    if (randomizeResult.ok) {
+      shopify.toast.show(
+        `Randomized trending_score on ${randomizeResult.productCount} products, ${randomizeResult.variantCount} variants`,
+      );
+    } else {
+      shopify.toast.show(randomizeResult.error ?? "Randomize failed", { isError: true });
+    }
+  }, [randomizer.state, randomizer.data, randomizeResult, shopify]);
 
   useEffect(() => {
     setOptimistic((o) => {
@@ -386,7 +402,10 @@ export default function Workshop() {
         return next;
       });
     } else {
-      const patch: OptimisticPatch = { enabled: true, route: "prompt" };
+      const patch: OptimisticPatch =
+        intent === "seed"
+          ? { enabled: true, route: "auto" }
+          : { enabled: true, route: "prompt" };
       setOptimistic((o) => ({ ...o, [key]: patch }));
     }
     fetcher.submit({ intent, key }, { method: "POST" });
@@ -394,6 +413,7 @@ export default function Workshop() {
 
   const copyPrompt = (f: FeatureDef) => {
     const text = f.actor === "app" ? f.aiPrompt : f.sidekickPrompt;
+    if (!text) return;
     navigator.clipboard.writeText(text);
     shopify.toast.show(f.actor === "app" ? "Coding prompt copied" : "Sidekick prompt copied");
     setOpenPromptKey(null);
@@ -447,6 +467,36 @@ export default function Workshop() {
       onOpenPrompt: openStepPrompt,
       onSubmitIntent: submitIntent,
       onCopyPrompt: copyPrompt,
+      extraContent:
+        key === "confirm_live_results" ? (
+          <Box
+            padding="400"
+            background="bg-surface-secondary"
+            borderRadius="200"
+            borderWidth="025"
+            borderColor="border-secondary"
+          >
+            <BlockStack gap="300">
+              <BlockStack gap="100">
+                <Text as="p" variant="bodyMd" fontWeight="semibold">
+                  {RANDOMIZE_STEP_TITLE}
+                </Text>
+                <Text as="p" variant="bodySm" tone="subdued">
+                  {RANDOMIZE_STEP_DESCRIPTION}
+                </Text>
+              </BlockStack>
+              {randomizeResult?.ok === false && "error" in randomizeResult && (
+                <Banner tone="critical">{randomizeResult.error ?? "Randomize failed"}</Banner>
+              )}
+              <randomizer.Form method="post">
+                <input type="hidden" name="intent" value="randomize-trending" />
+                <Button submit loading={randomizing} disabled={randomizing || !catalogReady}>
+                  Randomize trending scores
+                </Button>
+              </randomizer.Form>
+            </BlockStack>
+          </Box>
+        ) : undefined,
     };
   };
 
@@ -521,55 +571,6 @@ export default function Workshop() {
                 ))}
               </List>
             </BlockStack>
-          </ActivitySection>
-        </Layout.Section>
-
-        <Layout.Section>
-          <ActivitySection
-            id="parts"
-            title="Parts"
-            teaser={PARTS_TEASER}
-            icon={PackageIcon}
-            open={sectionsOpen.parts}
-            onToggle={() => toggleSection("parts")}
-            accessory={
-              <Badge tone={catalogReady ? "success" : "attention"}>
-                {catalogReady ? "Catalog ready" : "Seed needed"}
-              </Badge>
-            }
-          >
-            <Text as="p" variant="bodyMd" tone="subdued">
-              {PARTS_INTRO}
-            </Text>
-
-            <Box
-              padding="400"
-              background="bg-surface-secondary"
-              borderRadius="200"
-              borderWidth="025"
-              borderColor="border-secondary"
-            >
-              <BlockStack gap="300">
-                <BlockStack gap="100">
-                  <Text as="p" variant="bodyMd" fontWeight="semibold">
-                    {CATALOG_PART_TITLE}
-                  </Text>
-                  <Text as="p" variant="bodySm" tone="subdued">
-                    {`${seedCount} products — ${CATALOG_PART_DESCRIPTION}`}
-                  </Text>
-                </BlockStack>
-                {seedResult?.ok === true && "created" in seedResult && (
-                  <Banner tone="success">{`Created ${seedResult.created} products.`}</Banner>
-                )}
-                <seeder.Form method="post">
-                  <input type="hidden" name="intent" value="seed" />
-                  <Button submit loading={seeding} disabled={seeding} variant="primary">
-                    Seed sample products
-                  </Button>
-                </seeder.Form>
-              </BlockStack>
-            </Box>
-
             <Box
               padding="400"
               background="bg-surface-secondary"

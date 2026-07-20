@@ -36,9 +36,8 @@ export async function retryStep(shop: string, key: FeatureKey, graphql?: AdminGr
     data: { enabled: false, config: null },
   });
 
-  // Restarting from Step 1 invalidates cached metafield-definition GIDs (e.g. after
-  // helper changes to smartCollectionCondition). Clear them so the next run re-resolves.
-  if (keys.includes("featured_source")) {
+  // Restarting from Step 1 or Step 2 invalidates cached metafield-definition GIDs.
+  if (keys.includes("featured_source") || keys.includes("seed_products")) {
     await prisma.managedResource.deleteMany({
       where: { shop, kind: "metafieldDefinition" },
     });

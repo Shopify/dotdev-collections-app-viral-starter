@@ -1,9 +1,9 @@
-// Tracks that a step was completed via the prompt path (Mark as done).
-// Stored in ShopFeature.config as a small JSON blob.
+// Tracks that a step was completed via the prompt path (Mark as done) or
+// the one-click seed path (Step 1). Stored in ShopFeature.config as JSON.
 import prisma from "~/db.server";
 import { FEATURES, type FeatureKey } from "./registry";
 
-export type StepRoute = "prompt";
+export type StepRoute = "prompt" | "auto";
 export type RouteState = Partial<Record<FeatureKey, StepRoute>>;
 
 export async function getRoutes(shop: string): Promise<RouteState> {
@@ -14,8 +14,8 @@ export async function getRoutes(shop: string): Promise<RouteState> {
     if (!row.config) continue;
     try {
       const parsed = JSON.parse(row.config);
-      if (parsed && parsed.route === "prompt") {
-        state[row.key as FeatureKey] = "prompt";
+      if (parsed && (parsed.route === "prompt" || parsed.route === "auto")) {
+        state[row.key as FeatureKey] = parsed.route;
       }
     } catch {
       // Skip rows with malformed config JSON.

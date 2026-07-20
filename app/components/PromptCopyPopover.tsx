@@ -1,4 +1,4 @@
-import { BlockStack, Box, Button, Popover, Scrollable, Text, TextField } from "@shopify/polaris";
+import { BlockStack, Box, Button, Popover, Text, TextField } from "@shopify/polaris";
 
 export interface PromptCopyPopoverProps {
   open: boolean;
@@ -47,16 +47,15 @@ export function PromptCopyPopover({
             <Text as="p" variant="bodySm" tone="subdued">
               {helperText}
             </Text>
-            <Scrollable style={{ maxHeight: "220px" }} focusable>
-              <TextField
-                label={fieldLabel}
-                labelHidden
-                value={prompt}
-                readOnly
-                multiline={16}
-                autoComplete="off"
-              />
-            </Scrollable>
+            <TextField
+              label={fieldLabel}
+              labelHidden
+              value={prompt}
+              readOnly
+              multiline={10}
+              maxHeight={220}
+              autoComplete="off"
+            />
             <Button variant="primary" onClick={onCopy}>
               Copy
             </Button>

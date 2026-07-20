@@ -40,7 +40,7 @@ const catalog = JSON.parse(
 
 export const SEED_PRODUCTS: ProductSeed[] = catalog.products;
 
-/** Vendor stamped on every seeded product — use to query them back after Parts → Seed. */
+/** Vendor stamped on every seeded product — use to query them back after Step 1 seed. */
 export const SEED_VENDOR = "Viral";
 
 export interface SeededProductGid {
@@ -61,7 +61,7 @@ const LIST_SEED_PRODUCTS = `#graphql
   }
 `;
 
-/** Product + variant GIDs for workshop steps (Step 1 selections, Step 6 variant metafields). */
+/** Product + variant GIDs for workshop steps (Step 2 selections, Step 7 variant metafields). */
 export async function listSeededProductGids(
   graphql: AdminGraphql,
   opts?: { limit?: number },
@@ -111,14 +111,16 @@ const PRIMARY_LOCATION = `#graphql
   { location { id } }
 `;
 
-// "Online Store" is an AppCatalog publication, not a fixed/well-known ID — look
-// it up by catalog title rather than assuming which publication comes first.
+// Online Store is an AppCatalog publication. Catalog title is NOT "Online Store"
+// (it's "Channel Catalog <id> for Online Store") — resolve via the online_store app handle.
 const ONLINE_STORE_PUBLICATION = `#graphql
   query OnlineStorePublication {
-    publications(first: 20) {
+    publications(first: 25) {
       nodes {
         id
+        name
         catalog { title }
+        app { handle }
       }
     }
   }
@@ -143,10 +145,24 @@ async function getPrimaryLocationId(graphql: AdminGraphql): Promise<string | nul
 async function getOnlineStorePublicationId(graphql: AdminGraphql): Promise<string | null> {
   const res = await graphql(ONLINE_STORE_PUBLICATION);
   const { data } = (await res.json()) as {
-    data?: { publications?: { nodes: { id: string; catalog?: { title: string } | null }[] } };
+    data?: {
+      publications?: {
+        nodes: {
+          id: string;
+          name?: string | null;
+          catalog?: { title: string } | null;
+          app?: { handle: string } | null;
+        }[];
+      };
+    };
   };
   const nodes = data?.publications?.nodes ?? [];
-  return nodes.find((n) => n.catalog?.title === "Online Store")?.id ?? null;
+  return (
+    nodes.find((n) => n.app?.handle === "online_store")?.id ??
+    nodes.find((n) => n.name === "Online Store")?.id ??
+    nodes.find((n) => n.catalog?.title === "Online Store")?.id ??
+    null
+  );
 }
 
 async function publishToOnlineStore(
@@ -161,6 +177,25 @@ async function publishToOnlineStore(
     data?: { publishablePublish?: { userErrors?: { message: string }[] } };
   };
   return data?.publishablePublish?.userErrors ?? [];
+}
+
+/** Publish every Viral-vendor product to Online Store (idempotent). */
+async function publishSeededProductsToOnlineStore(
+  graphql: AdminGraphql,
+  publicationId: string,
+): Promise<{ published: number; errors: string[] }> {
+  const seeded = await listSeededProductGids(graphql);
+  const errors: string[] = [];
+  let published = 0;
+  for (const { productId } of seeded) {
+    const userErrors = await publishToOnlineStore(graphql, productId, publicationId);
+    if (userErrors.length === 0) {
+      published += 1;
+    } else {
+      errors.push(...userErrors.map((e) => e.message));
+    }
+  }
+  return { published, errors };
 }
 
 export async function getProductCount(graphql: AdminGraphql): Promise<number> {
@@ -338,4 +373,35 @@ export async function seedProducts(opts: { shop: string; graphql: AdminGraphql }
     results.push(await seedProduct(graphql, product, ctx));
   }
   return results;
+}
+
+/** Step 1 enable: seed catalog if Viral products are not already present. */
+export async function enableSeedProducts(opts: { shop: string; graphql: AdminGraphql }) {
+  const existing = await listSeededProductGids(opts.graphql);
+  const publicationId = await getOnlineStorePublicationId(opts.graphql);
+
+  if (existing.length > 0) {
+    // Products may exist from an earlier seed that failed to resolve Online Store —
+    // always (re)publish so channels stay correct on Step 1 retry.
+    if (publicationId) {
+      await publishSeededProductsToOnlineStore(opts.graphql, publicationId);
+    }
+    return { created: 0, alreadyPresent: existing.length };
+  }
+  const results = await seedProducts(opts);
+  const failed = results.filter((r) => r.errors.length > 0);
+  if (failed.length === results.length) {
+    throw new Error(
+      `Seed failed: ${failed
+        .flatMap((r) => r.errors.map((e) => e.message))
+        .slice(0, 3)
+        .join("; ")}`,
+    );
+  }
+  return { created: results.length - failed.length, alreadyPresent: 0 };
+}
+
+/** Step 1 disable: leave catalog in place (workshop reset does not delete products). */
+export async function disableSeedProducts(_opts: { shop: string }) {
+  return;
 }

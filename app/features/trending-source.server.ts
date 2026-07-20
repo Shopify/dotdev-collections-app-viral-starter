@@ -1,5 +1,5 @@
 /**
- * Step 2 — Trending signal.
+ * Step 3 — Trending signal.
  * Implement from the coding prompt on the build path, then Mark as done.
  */
 
@@ -10,7 +10,7 @@ export async function enableTrendingSource(_opts: {
   graphql: AdminGraphql;
 }): Promise<void> {
   throw new Error(
-    "trending_source is not implemented yet — use the Step 2 coding prompt, then Mark as done.",
+    "trending_source is not implemented yet — use the Step 3 coding prompt, then Mark as done.",
   );
 }
 
@@ -18,5 +18,5 @@ export async function disableTrendingSource(_opts: {
   shop: string;
   graphql: AdminGraphql;
 }): Promise<void> {
-  // No-op until Step 2 is implemented.
+  // No-op until Step 3 is implemented.
 }

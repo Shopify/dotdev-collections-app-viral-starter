@@ -1,5 +1,5 @@
 /**
- * Step 1 — Featured source (manual selection).
+ * Step 2 — Featured source (manual selection).
  * Implement from the coding prompt on the build path, then Mark as done.
  *
  * Start here — do not invent GraphQL from scratch:
@@ -26,7 +26,7 @@ export async function enableFeaturedSource(_opts: {
   graphql: AdminGraphql;
 }): Promise<void> {
   throw new Error(
-    "featured_source is not implemented yet — use the Step 1 coding prompt, then Mark as done.",
+    "featured_source is not implemented yet — use the Step 2 coding prompt, then Mark as done.",
   );
 }
 
@@ -34,7 +34,7 @@ export async function disableFeaturedSource(_opts: {
   shop: string;
   graphql: AdminGraphql;
 }): Promise<void> {
-  // No-op until Step 1 is implemented. `graphql` is passed so your teardown can
+  // No-op until Step 2 is implemented. `graphql` is passed so your teardown can
   // delete the Shopify collection/source, not just clear local progress.
 }
 
@@ -43,6 +43,6 @@ export async function requireFeaturedCollection(_opts: {
   graphql: AdminGraphql;
 }): Promise<{ collectionGid: string; sourceGid: string }> {
   throw new Error(
-    "featured_source is not implemented yet — finish Step 1 before later steps that need the collection.",
+    "featured_source is not implemented yet — finish Step 2 before later steps that need the collection.",
   );
 }

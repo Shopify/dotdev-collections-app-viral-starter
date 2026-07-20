@@ -80,17 +80,18 @@ for (const file of appFiles) {
   }
 }
 
-// --- StepIntent is prompt-only ---
+// --- StepIntent is prompt-only (+ seed for Step 1) ---
 const stepUi = read("app/components/BuildPathStep.tsx");
 ok(
-  "StepIntent is complete-prompt|reset|skip",
-  /export type StepIntent = "complete-prompt" \| "reset" \| "skip"/.test(stepUi),
+  "StepIntent is complete-prompt|seed|reset|skip",
+  /export type StepIntent = "complete-prompt" \| "seed" \| "reset" \| "skip"/.test(stepUi),
 );
 ok("BuildPathStep has Skip to next step", /Skip to next step/.test(stepUi));
 ok("BuildPathStep has Mark as done", /Mark as done/.test(stepUi));
 ok("BuildPathStep has View coding prompt", /View coding prompt/.test(stepUi));
 ok("BuildPathStep has View Sidekick prompt", /View Sidekick prompt/.test(stepUi));
 ok("BuildPathStep has no build-auto submit", !/build-auto/.test(stepUi));
+ok("BuildPathStep has Seed sample products", /Seed sample products/.test(stepUi));
 
 // --- Action route intents ---
 const index = read("app/routes/app._index.tsx");
@@ -99,14 +100,15 @@ ok("home action has no build-auto", !/build-auto/.test(index));
 ok("home action has no turn-off", !/turn-off/.test(index));
 ok("Mark as done calls provisionStep", /provisionStep\(/.test(index));
 
-// --- Route type is prompt-only ---
+// --- Route type includes prompt + auto (Step 1 seed) ---
 const route = read("app/features/route.server.ts");
-ok("StepRoute is prompt only", /export type StepRoute = "prompt"/.test(route));
-ok("route.server has no auto", !/"auto"/.test(route));
+ok('StepRoute includes "prompt"', /"prompt"/.test(route));
+ok('StepRoute includes "auto"', /"auto"/.test(route));
 
 // --- Registry completeness ---
 const registry = read("app/features/registry.ts");
 const expectedKeys = [
+  "seed_products",
   "featured_source",
   "trending_source",
   "confirm_trending_collection",
@@ -123,6 +125,13 @@ for (const key of expectedKeys) {
 ok("registry has app prompts", /aiPrompt:/.test(registry));
 ok("registry has sidekick prompts", /sidekickPrompt:/.test(registry));
 ok("registry does not mention Build for me", !/Build for me/.test(registry));
+ok("seed step is provisionOnly", /provisionOnly:\s*true/.test(registry));
+ok("home has no Parts section", !/title="Parts"/.test(index));
+ok("home has randomize-trending", /randomize-trending/.test(index));
+ok(
+  "seed-products exports enableSeedProducts",
+  /export async function enableSeedProducts/.test(read("app/features/seed-products.server.ts")),
+);
 
 const collectionSources = read("app/lib/collection-sources.server.ts");
 ok(

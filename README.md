@@ -72,12 +72,15 @@ Shopify CLI may create local files under `.shopify/` and `shopify.app.<name>.tom
 The app home (`/app`) is the activity:
 
 1. **Mission** — why Viral writes a score instead of a product list
-2. **Blueprint** — outcome + success criteria (expand the section in the app)
-3. **Parts** — seed sample products and open Collection Sources API docs
-4. **Build path** — nine steps in order (App builds + Merchant checkpoints)
-5. **Go further** — take-home prompt to reuse the pattern on a signal your own app already computes (expand that section when you finish the build path)
+2. **Blueprint** — outcome + success criteria + Collection Sources API docs
+3. **Build path** — ten steps in order (App builds + Merchant checkpoints)
+4. **Go further** — take-home prompt to reuse the pattern on a signal your own app already computes (expand that section when you finish the build path)
 
 ### App steps
+
+**Step 1 (Seed sample products):** click **Seed sample products** — one-click catalog seed (no coding prompt).
+
+Other App steps:
 
 1. Open **View coding prompt**
 2. Paste into your coding agent and **implement the stub** in `app/features/*.server.ts` (dispatch is already wired in `provision.server.ts`)
@@ -91,25 +94,26 @@ Until the stub is implemented, **Mark as done** shows **Step not implemented yet
 2. Paste into Sidekick and act as the merchant in admin
 3. Click **Mark as done** (progress only — no app provisioning)
 
-Paste the Sidekick prompt as-is.
+Paste the Sidekick prompt as-is. On Step 10, **Randomize trending scores** first, then Sidekick.
 
-## Build path (nine steps)
+## Build path (ten steps)
 
 | Step | Actor    | Title                                      |
 | ---- | -------- | ------------------------------------------ |
-| 1    | App      | Featured source (manual selection)         |
-| 2    | App      | Trending signal                            |
-| 3    | Merchant | Confirm the Trending collection            |
-| 4    | App      | Publish sources for co-creation            |
-| 5    | Merchant | Add your own rule alongside Viral's source |
-| 6    | App      | Variant drop: trending red products        |
-| 7    | Merchant | Discount that follows the signal           |
-| 8    | Merchant | Reuse for an expedited shipping profile    |
-| 9    | Merchant | Review what's updating on its own          |
+| 1    | App      | Seed sample products                       |
+| 2    | App      | Featured source (manual selection)         |
+| 3    | App      | Trending signal                            |
+| 4    | Merchant | Verify your collection                     |
+| 5    | App      | Publish sources for co-creation            |
+| 6    | Merchant | Add a new source alongside Viral's source  |
+| 7    | App      | Variant drop: trending red products        |
+| 8    | Merchant | Discount that follows the signal           |
+| 9    | Merchant | Reuse for an expedited shipping profile    |
+| 10   | Merchant | Review what's updating on its own          |
 
-**Step 1 tip:** start from helpers in `app/lib/collection-sources.server.ts` — do not invent Collection Sources mutations from scratch. Public reference: [collectionConditionsSourceCreate](https://shopify.dev/docs/api/admin-graphql/latest/mutations/collectionConditionsSourceCreate).
+**Step 2 tip:** start from helpers in `app/lib/collection-sources.server.ts` — do not invent Collection Sources mutations from scratch. Public reference: [collectionConditionsSourceCreate](https://shopify.dev/docs/api/admin-graphql/2026-07/mutations/collectionConditionsSourceCreate).
 
-**Step 8 note:** Step 8 creates (or reuses) a collection with handle `expedited` behind an Expedited shipping profile, then adds the trending condition — the Sidekick prompt walks you through it.
+**Step 9 note:** build a new "Expedite Shipping" collection with a price condition plus Viral's shareable Red Drop source, then point an Expedited shipping profile at it (Sidekick prompt).
 
 Step definitions and prompts live in `app/features/registry.ts`. Wire enable/disable through `app/features/provision.server.ts`.
 
